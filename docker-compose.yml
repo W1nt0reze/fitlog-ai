@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: fitlog-postgres
+    environment:
+      POSTGRES_DB: fitlog
+      POSTGRES_USER: fitlog
+      POSTGRES_PASSWORD: fitlog
+    ports:
+      - "5432:5432"
