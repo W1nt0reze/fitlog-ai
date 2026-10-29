@@ -3,12 +3,13 @@ package com.fitlog_ai.fitlog.training.dto;
 import com.fitlog_ai.fitlog.training.enums.Difficulty;
 
 import java.time.LocalDate;
+import jakarta.validation.constraints.*;
 
 public record WorkoutRequest(
-        String title,
-        LocalDate date,
-        Integer durationMinutes,
+        @NotBlank @Size(max = 255) String title,
+        @NotNull LocalDate date,
+        @Positive Integer durationMinutes,
         Difficulty difficulty,
-        String notes
+        @Size(max = 1000) String notes
 ) {
 }

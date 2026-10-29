@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/workouts")
@@ -27,10 +28,13 @@ public class WorkoutController {
         return workoutService.getWorkoutById(id);
     }
 
-    @PostMapping
+    @PostMapping("/user/{userId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public WorkoutResponse createWorkout(@RequestBody WorkoutRequest request) {
-        return workoutService.createWorkout(request);
+    public WorkoutResponse createWorkout(
+            @PathVariable Long userId,
+            @Valid @RequestBody WorkoutRequest request) {
+
+        return workoutService.createWorkout(userId, request);
     }
 
     @DeleteMapping("/{id}")
@@ -39,12 +43,12 @@ public class WorkoutController {
     }
 
     @PutMapping("/{id}")
-    public WorkoutResponse updateWorkout(@PathVariable Long id, @RequestBody WorkoutRequest request) {
+    public WorkoutResponse updateWorkout(@PathVariable Long id, @Valid @RequestBody WorkoutRequest request) {
         return workoutService.updateWorkout(id, request);
     }
 
     @GetMapping("/user/{userId}")
-    public List<WorkoutResponse> getWorkoutByUserId(@PathVariable Long id) {
+    public List<WorkoutResponse> getWorkoutByUserId(@PathVariable("userId") Long id) {
         return workoutService.getByUserId(id);
     }
 }

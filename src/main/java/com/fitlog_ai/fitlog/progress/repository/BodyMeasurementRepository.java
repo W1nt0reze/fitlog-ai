@@ -6,6 +6,6 @@ import com.fitlog_ai.fitlog.progress.entity.BodyMeasurement;
 
 import java.util.List;
 
-public interface BodyMeasurementsRepository extends JpaRepository<BodyMeasurement, Long> {
-    List<BodyMeasurement> findByUserOrderByDateDesc(User user);
+public interface BodyMeasurementRepository extends JpaRepository<BodyMeasurement, Long> {
+    List<BodyMeasurement> findByUserIdOrderByDateDesc(Long userId);
 }

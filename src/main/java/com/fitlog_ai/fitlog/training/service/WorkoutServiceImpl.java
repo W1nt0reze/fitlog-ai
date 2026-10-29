@@ -8,22 +8,22 @@ import com.fitlog_ai.fitlog.training.dto.WorkoutResponse;
 import com.fitlog_ai.fitlog.training.entity.Workout;
 import com.fitlog_ai.fitlog.training.mapper.WorkoutMapper;
 import com.fitlog_ai.fitlog.training.repository.WorkoutRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class WorkoutServiceImpl implements WorkoutService {
     private final WorkoutRepository workoutRepository;
     private final WorkoutMapper workoutMapper;
     private final UserRepository userRepository;
 
-    public WorkoutServiceImpl(WorkoutRepository workoutRepository, UserRepository userRepository) {
+    public WorkoutServiceImpl(WorkoutRepository workoutRepository, WorkoutMapper workoutMapper, UserRepository userRepository) {
         this.workoutRepository = workoutRepository;
-        this.workoutMapper = new WorkoutMapper();
+        this.workoutMapper = workoutMapper;
         this.userRepository = userRepository;
     }
 
@@ -44,9 +44,18 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Transactional
     @Override
-    public WorkoutResponse createWorkout(WorkoutRequest request) {
+    public WorkoutResponse createWorkout(Long userId, WorkoutRequest request) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User with id " + userId + " not found"));
+
         Workout workout = workoutMapper.toEntity(request);
+
+        workout.setUser(user);
+
         Workout savedWorkout = workoutRepository.save(workout);
+
         return workoutMapper.toResponse(savedWorkout);
     }
 
@@ -58,6 +67,7 @@ public class WorkoutServiceImpl implements WorkoutService {
         workoutRepository.delete(workout);
     }
 
+    @Transactional
     @Override
     public WorkoutResponse updateWorkout(Long id, WorkoutRequest request) {
         Workout workout = workoutRepository.findById(id).
@@ -69,7 +79,7 @@ public class WorkoutServiceImpl implements WorkoutService {
         workout.setDifficulty(request.difficulty());
         workout.setNotes(request.notes());
 
-        return workoutMapper.toResponse(workoutRepository.save(workout));
+        return workoutMapper.toResponse(workout);
     }
 
     @Override
